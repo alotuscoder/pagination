@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Pagination example </title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1> Pagination Sample </h1>
+    <h2> Country Data </h2>
+    <button onclick="getData()"> Get Data </button>
+    <div class="pagination">
+        <ul class="table">
+
+        </ul>    
+    </div>
+    
+    <button onclick="PreviousPage()"> Previous Page </button>
+    <button onclick="nextPage()"> Next Page</button>
+
+    <script>
+        let data1;
+        let page = 0;
+        async function getData() { 
+            url = 'https://jsonmock.hackerrank.com/api/countries/search?name=s&page=' + page;
+            await fetch(url)
+            .then(val => val.json())
+            .then(res => data1 = res.data);
+            const table = document.querySelector('.table');
+            const nodelist1 = data1.map((data) =>{
+                const li = document.createElement('li'); 
+                li.appendChild(document.createTextNode(data.name));
+                return li;
+            });
+            for(var i = 0; i<nodelist1.length; i++) {
+                table.appendChild(nodelist1[i]);
+            }
+        }
+
+        function nextPage() { 
+            page++;
+            const table = document.querySelector('.table');
+            while(table.firstChild) {
+                table.removeChild(table.firstChild);
+            }
+            getData();
+        }
+
+        function PreviousPage() {
+            if (page > 0) {
+                page = page -1;
+                const table = document.querySelector('.table');
+                while(table.firstChild) {
+                table.removeChild(table.firstChild);
+                }
+                getData()
+            }
+            else {
+                console.log('This is the first page, please click next page');
+            }
+            
+        }
+
+    </script>
+</body>
+</html>
