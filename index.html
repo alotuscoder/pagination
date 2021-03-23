@@ -12,53 +12,72 @@
     <h2> Country Data </h2>
     <button onclick="getData()"> Get Data </button>
     <div class="pagination">
-        <ul class="table">
-
-        </ul>    
+        <ul class="table"></ul>    
     </div>
     
-    <button onclick="PreviousPage()"> Previous Page </button>
-    <button onclick="nextPage()"> Next Page</button>
+    <button class = "nav-previous" onclick="previousPage()"> Previous Page </button>
+    <button class = "nav-next" onclick="nextPage()"> Next Page</button>
+    <div class = "message-banner"></div>
 
     <script>
         let data1;
-        let page = 0;
-        async function getData() { 
+        let page = 1;
+        const message = document.querySelector('.message-banner');
+        async function getData() {
+            const table = document.querySelector('.table');
             url = 'https://jsonmock.hackerrank.com/api/countries/search?name=s&page=' + page;
             await fetch(url)
             .then(val => val.json())
             .then(res => data1 = res.data);
-            const table = document.querySelector('.table');
+            
+            console.log(data1);
+            if (data1.length != 0) {
+                while(table.firstChild) {
+                table.removeChild(table.firstChild);
+                }
+            }
+
+            if (data1.length == 0 ) {
+                message.appendChild(document.createTextNode('This is the last page, please click previous page'));
+            }
+
             const nodelist1 = data1.map((data) =>{
                 const li = document.createElement('li'); 
                 li.appendChild(document.createTextNode(data.name));
                 return li;
             });
+
             for(var i = 0; i<nodelist1.length; i++) {
-                table.appendChild(nodelist1[i]);
+            table.appendChild(nodelist1[i]);
             }
+            // else {
+            //     const nav = document.body;
+            //     const data1 = document.createElement('li')
+            //     data1.appendChild(document.createTextNode('This is the last page, Please click previous page'));
+            //     nav.appendChild(data1);
+            // }
         }
 
-        function nextPage() { 
-            page++;
-            const table = document.querySelector('.table');
-            while(table.firstChild) {
-                table.removeChild(table.firstChild);
+        function nextPage() {
+            if (page >= 1 && message.childNodes.length) {
+                const text = message.childNodes[0];
+                message.removeChild(text)
             }
+            page++;
             getData();
         }
 
-        function PreviousPage() {
-            if (page > 0) {
+        function previousPage() {
+            while(message.childNodes.length){
+                const text = message.childNodes[0];
+                message.removeChild(text)
+            }
+            if (page > 1) {
                 page = page -1;
-                const table = document.querySelector('.table');
-                while(table.firstChild) {
-                table.removeChild(table.firstChild);
-                }
                 getData()
             }
             else {
-                console.log('This is the first page, please click next page');
+                message.appendChild(document.createTextNode('This is the first page, please click next page'))
             }
             
         }
